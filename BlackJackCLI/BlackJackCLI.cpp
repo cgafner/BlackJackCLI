@@ -11,6 +11,12 @@ enum Rank {
     ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING
 };
 
+const char* RankStrings[] = {
+    "",
+    "A", "2", "3", "4", "5", "6", "7",
+    "8", "9", "10", "J", "Q", "K"
+};
+
 enum Suit {
     HEARTS, DIAMONDS, CLUBS, SPADES
 };
@@ -117,7 +123,23 @@ public:
 
     void printHandValue(int value) const
     {
-        cout << name_ << " hand value: " << value << '\n';
+        if(value <= 21 && value >= 0)
+        {
+            cout << name_ << " hand value: " << value << '\n';
+        }
+        else
+        {
+            cout << name_ << " busted!\n";
+        }
+    }
+
+    void printHandRanks() const
+    {
+	    for(int i = 0; i < hand_.size(); i++)
+	    {
+	    	cout << RankStrings[hand_[i]->getRank()] << ' ';
+	    }
+        cout << '\n';
     }
 
 private:
@@ -129,23 +151,82 @@ int main() {
     Deck deck;
     deck.shuffledeck();
 
-    Player player("player");
-    Player dealer("dealer");
+    Player player("Player");
+    Player dealer("Dealer");
 
-    while(player.getHandValue() != -1 || dealer.getHandValue() != -1)
+    cout << "-----------------\n";
+    cout << "First deal.";
+    cout << "\n-----------------\n\n";
+
+    player.addCard(deck.drawCard());
+    player.addCard(deck.drawCard());
+
+    cout << '\n';
+
+    if(player.getHandValue() == 21)
     {
-    	player.addCard(deck.drawCard());
-    	player.addCard(deck.drawCard());
+        cout << "Player got BLACKJACK!\n";
+    }
+    else
+    {
         player.printHandValue(player.getHandValue());
+    }
+    player.printHandRanks();
 
-    	dealer.addCard(deck.drawCard());
-    	dealer.addCard(deck.drawCard());
-        dealer.printHandValue(dealer.getHandValue());
+    cout << '\n';
 
-        cout << "\nNext deal." << "\n\n";
+    dealer.addCard(deck.drawCard());
+
+    cout << "Known ";
+    dealer.printHandValue(dealer.getHandValue());
+
+    cout << '\n';
+
+    dealer.addCard(deck.drawCard());
+
+    // above is the first hand. It is not possible to get over 21.
+
+    while(player.getHandValue() < 17 && player.getHandValue() != -1)
+    {
+        cout << "\n-----------------\n";
+        cout << "Next deal.";
+    	cout << "\n-----------------\n\n\n";
+
+    	player.addCard(deck.drawCard());
+    	player.printHandValue(player.getHandValue());
+        player.printHandRanks();
+        cout << '\n';
     }
 
-    cout << "\n\nGame over.";
+    cout << "Final ";
+    dealer.printHandValue(dealer.getHandValue());
+
+    if(player.getHandValue() <= 21 && player.getHandValue() != -1)
+    {
+        if(player.getHandValue() != 21)
+        {
+            cout << "\nPlayer Calls!\n";
+            cout << "Final ";
+            player.printHandValue(player.getHandValue());
+        }
+    }
+    if(player.getHandValue() == dealer.getHandValue())
+    {
+        cout << "\nDEALER AND PLAYER TIE NO WIN\n";
+    }
+    else if (player.getHandValue() < dealer.getHandValue())
+    {
+        cout << "\nPLAYER LOSES...\n";
+
+    }
+    else
+    {
+        cout << "\nPLAYER WINS!\n";
+    }
+
+    cout << "\n\n-----------------\n";
+    cout << "GAME OVER!";
+    cout << "\n-----------------\n\n";
 
     return 0;
 }
